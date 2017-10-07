@@ -1,0 +1,49 @@
+{
+	"COMM_ADAPTATIONLOGIC": [
+		{
+			"COMM_ELEMENT": {
+				"COMM_TYPE": "PUBSUB",
+				"COMM_RECEIVER": "fesasID-123_1_002",
+				"COMM_SENDER": "fesasID-123_1_001",
+				"COMM_INFO_TYPE": "Sensor_SIMPLESAS",
+				"COMM_INFO_CATEGORY": "SENSOR"
+			}
+		},
+		{
+			"COMM_ELEMENT": {
+				"COMM_TYPE": "PUBSUB",
+				"COMM_RECEIVER": "fesasID-123_1_003",
+				"COMM_SENDER": "fesasID-123_1_002",
+				"COMM_INFO_TYPE": "Monitoring_SIMPLESAS",
+				"COMM_INFO_CATEGORY": "MONITOR"
+			}
+		},
+		{
+			"COMM_ELEMENT": {
+				"COMM_TYPE": "PUBSUB",
+				"COMM_RECEIVER": "fesasID-123_1_004",
+				"COMM_SENDER": "fesasID-123_1_003",
+				"COMM_INFO_TYPE": "Analyzing_SIMPLESAS",
+				"COMM_INFO_CATEGORY": "ANALYZER"
+			}
+		},
+		{
+			"COMM_ELEMENT": {
+				"COMM_TYPE": "PUBSUB",
+				"COMM_RECEIVER": "fesasID-123_1_005",
+				"COMM_SENDER": "fesasID-123_1_004",
+				"COMM_INFO_TYPE": "Planning_SIMPLESAS",
+				"COMM_INFO_CATEGORY": "PLANNER"
+			}
+		},
+		{
+			"COMM_ELEMENT": {
+				"COMM_TYPE": "PUBSUB",
+				"COMM_RECEIVER": "fesasID-123_1_006",
+				"COMM_SENDER": "fesasID-123_1_005",
+				"COMM_INFO_TYPE": "Executing_SIMPLESAS",
+				"COMM_INFO_CATEGORY": "EXECUTOR"
+			}
+		}
+	]
+}
