@@ -45,8 +45,8 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 		//use this method for initializing variables, etc.
 		// if there is nothing to do, delete it
 		server = SocketManager.getInstance().getServer();
-		//setupSocket();
-		this.test();
+		setupSocket();
+		//this.test();
 	}
 	
 	@Override
@@ -89,7 +89,7 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
         server.start();
 
         try {
-			Thread.sleep(10000);
+			Thread.sleep(60000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
