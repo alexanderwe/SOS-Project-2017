@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane fx:controller="controller.MainController"  xmlns:fx="http://javafx.com/fxml" alignment="CENTER" hgap="10" vgap="10">
+    <TextArea fx:id="jsonTextArea" GridPane.rowIndex="1"/>
+    <Button text="Sent JSON sensor data to FESAS" onAction="#sendJSON" GridPane.rowIndex="2"/>
+    <Button onAction="#prettyPrint" GridPane.rowIndex="2">Pretty Print</Button>
+    <Label fx:id="errorLabel" GridPane.rowIndex="3"/>
+
+</GridPane>

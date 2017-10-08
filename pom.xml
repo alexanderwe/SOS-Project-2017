@@ -6,6 +6,7 @@
 
     <groupId>com.github.alexanderwe</groupId>
     <artifactId>sos2017-project</artifactId>
+    <packaging>pom</packaging>
     <version>0.0.1</version>
 
     <properties>
@@ -15,8 +16,8 @@
 
 
     <modules>
-        <module>SocketSensorClient</module>
         <module>fesasSocketIo</module>
+        <module>SensorSocketClient</module>
     </modules>
 
 
