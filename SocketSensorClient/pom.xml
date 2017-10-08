@@ -2,11 +2,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.alexanderwe</groupId>
-  <artifactId>sos2017-project</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+	<parent>
+		<artifactId>sos2017-project</artifactId>
+		<groupId>com.github.alexanderwe</groupId>
+		<version>0.0.1</version>
+	</parent>
   <packaging>jar</packaging>
-
+	<artifactId>SocketSensorClient</artifactId>
   <name>sos2017-project</name>
   <url>http://maven.apache.org</url>
 
