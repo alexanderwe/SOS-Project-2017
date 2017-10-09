@@ -1,0 +1,6 @@
+{
+  "data": {
+    "sensorType": "Sensor.Type_Light",
+    "values": [100]
+  }
+}

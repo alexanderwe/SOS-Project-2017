@@ -1,5 +1,6 @@
 package logicElements.sensor;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import com.corundumstudio.socketio.AckRequest;
@@ -7,6 +8,8 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.ISensorLogic;
@@ -42,11 +45,10 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 	
 	@Override
 	public void initializeLogic(HashMap<String, String> properties) {
-		//use this method for initializing variables, etc.
-		// if there is nothing to do, delete it
+
+		// Set up the socket io sever for communication with the client
 		server = SocketManager.getInstance().getServer();
 		setupSocket();
-		//this.test();
 	}
 	
 	@Override
@@ -59,7 +61,8 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 				// or
 				// this.sendArrayList(List); // for a list
 				// return sth. as status message (displayed by the AL
-				System.out.println(data.getData());
+				JsonObject jsonObject = new JsonParser().parse((String) data.getData()).getAsJsonObject();
+				System.out.println(jsonObject.getAsJsonObject("data").get("sensorType").getAsString());
 				
 				this.sendData(data.getData());
 			}
@@ -68,28 +71,18 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 		return "Not a KnowledgeRecord! It is: " + data.getClass().getSimpleName();
 	}
 	
-	
-	private void test() {
-		final SocketIoSensor sensorInstance = this;
-		sensorInstance.callLogic(new KnowledgeRecord("Hello World", InformationType.Probe_SIMPLE_MANAGED_RESOURCES.toString(), InformationCategory.SENSOR.toString(), "fesasID-000_1_007", 1456129173400l));
-	}
-	
-	
 	private void setupSocket(){
 		final SocketIoSensor sensorInstance = this;
-        server.addEventListener("sensorData", String.class, new DataListener<String>() {
-            @Override
-            public void onData(SocketIOClient client, String data, AckRequest ackRequest) {
-            	KnowledgeRecord record = new KnowledgeRecord(data, InformationType.Probe_SIMPLE_MANAGED_RESOURCES.toString(), InformationCategory.SENSOR.toString(), "fesasID-000_1_007", 1456129173400l);
-            	sensorInstance.callLogic(record);
-            }
+        server.addEventListener("sensorData", String.class, (client, data, ackRequest) -> {
+            KnowledgeRecord record = new KnowledgeRecord(data, InformationType.Probe_SIMPLE_MANAGED_RESOURCES.toString(), InformationCategory.SENSOR.toString(), "fesasID-000_1_007", new Date().getTime());
+            sensorInstance.callLogic(record);
         });
         
         System.out.println("Server will start");
         server.start();
 
         try {
-			Thread.sleep(60000);
+			Thread.sleep(120000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
