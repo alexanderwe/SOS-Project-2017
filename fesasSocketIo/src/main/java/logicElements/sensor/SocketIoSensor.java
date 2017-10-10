@@ -62,8 +62,6 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 				// this.sendArrayList(List); // for a list
 				// return sth. as status message (displayed by the AL
 				JsonObject jsonObject = new JsonParser().parse((String) data.getData()).getAsJsonObject();
-				System.out.println(jsonObject.getAsJsonObject("data").get("sensorType").getAsString());
-				
 				this.sendData(data.getData());
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();

@@ -1,0 +1,7 @@
+{
+  "sensorType": "SENSOR.TYPE_PERSON",
+  "data": {
+    "room": 1,
+    "values": [1]
+  }
+}
