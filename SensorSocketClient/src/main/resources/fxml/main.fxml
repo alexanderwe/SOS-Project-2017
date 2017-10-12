@@ -1,41 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
+<VBox id="vbox" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.121"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+    <MenuBar fx:id="menuBar">
+        <menus>
+            <Menu text="File">
+                <items>
+                    <MenuItem onAction="#importJSON" text="Import JSON"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem fx:id="exit" onAction="#closeApplication" text="Exit"/>
+                </items>
+            </Menu>
+            <Menu text="Edit">
+                <items>
+                    <MenuItem onAction="#prettyPrint" text="Prettify"/>
+                </items>
+            </Menu>
+            <Menu text="Help">
+                <items>
+                    <MenuItem disable="true" text="Search"/>
+                    <MenuItem text="Online Manual" visible="false"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="About"/>
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
+    <VBox id="vbox" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1">
+        <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        </padding>
 
-<VBox id="vbox" prefHeight="400" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
-<MenuBar fx:id="menuBar">
-    <menus>
-        <Menu text="File">
-            <items>
-                <MenuItem onAction="#importJSON" text="Import JSON" />
-                <SeparatorMenuItem />
-                <MenuItem fx:id="exit" onAction="#closeApplication" text="Exit" />
-            </items>
-        </Menu>
-        <Menu text="Edit">
-            <items>
-                <MenuItem onAction="#prettyPrint" text="Prettify" />
-            </items>
-        </Menu>
-        <Menu text="Help">
-            <items>
-                <MenuItem disable="true" text="Search" />
-                <MenuItem text="Online Manual" visible="false" />
-                <SeparatorMenuItem />
-                <MenuItem text="About" />
-            </items>
-        </Menu>
-    </menus>
-</MenuBar>
-<TextArea fx:id="jsonTextArea" GridPane.rowIndex="1" />
-<Button onAction="#sendJSON" text="Send JSON sensor data to FESAS" />
-<Label fx:id="errorLabel" GridPane.rowIndex="3" />
+        <TextArea fx:id="jsonTextArea" GridPane.rowIndex="1"/>
+        <Button onAction="#sendJSON" text="Send JSON sensor data to FESAS"/>
+        <Label fx:id="errorLabel" GridPane.rowIndex="3"/>
+        <Label text="FESAS Result"/>
+        <TextArea fx:id="fesasResultTextArea"/>
+    </VBox>
 </VBox>

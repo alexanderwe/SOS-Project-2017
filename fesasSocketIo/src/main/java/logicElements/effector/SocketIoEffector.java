@@ -55,8 +55,8 @@ public class SocketIoEffector extends AbstractLogic implements IEffectorLogic {
 				// this.sendArrayList(List); // for a list
 				// return sth. as status message (displayed by the AL
 				
-				//SocketIOClient client = server.getAllClients().toArray(new SocketIOClient[1])[0];
-				//client.sendEvent("effectorData", (String)data.getData());
+				SocketIOClient client = server.getAllClients().toArray(new SocketIOClient[1])[0];
+				client.sendEvent("effectorData", (String) data.getData());
 				System.out.println(data.getData() + "Is now in the effector");
 				
 			}

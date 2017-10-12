@@ -80,7 +80,7 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
         server.start();
 
         try {
-			Thread.sleep(120000);
+			Thread.sleep(180000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
