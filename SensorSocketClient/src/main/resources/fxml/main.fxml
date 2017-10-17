@@ -20,12 +20,10 @@
                     <MenuItem onAction="#prettyPrint" text="Prettify"/>
                 </items>
             </Menu>
-            <Menu text="Help">
+            <Menu text="Server">
                 <items>
-                    <MenuItem disable="true" text="Search"/>
-                    <MenuItem text="Online Manual" visible="false"/>
-                    <SeparatorMenuItem/>
-                    <MenuItem text="About"/>
+                    <MenuItem text="Shutdown"  onAction="#shutDownServer"/>
+                    <MenuItem text="Connect"  onAction="#connectToServer"/>
                 </items>
             </Menu>
         </menus>

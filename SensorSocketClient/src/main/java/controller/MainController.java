@@ -49,7 +49,7 @@ public class MainController {
         errorLabel.setTextFill(Color.web("#000000"));
         try {
             JsonObject jsonObject = new JsonParser().parse(jsonTextArea.getText()).getAsJsonObject(); // To check if JSON is valid
-            sensorSocket.sendSensorData(jsonTextArea.getText());
+            sensorSocket.sendMessage("sensorData", jsonTextArea.getText());
         } catch (JsonSyntaxException ilse) {
             logger.error("Not a valid JSON string");
             errorLabel.setText("Not a valid JSON string");
@@ -79,6 +79,14 @@ public class MainController {
             errorLabel.setText("Not a valid JSON string");
             errorLabel.setTextFill(Color.web("#FF0000"));
         }
+    }
+
+    public void shutDownServer() throws IOException{
+        sensorSocket.sendMessage("shutdown", true);
+    }
+
+    public void connectToServer(){
+        sensorSocket.connect();
     }
 
     public void importJSON(ActionEvent actionEvent) {

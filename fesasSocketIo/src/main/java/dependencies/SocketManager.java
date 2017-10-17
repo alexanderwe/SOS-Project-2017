@@ -1,6 +1,7 @@
 package dependencies;
 
 import com.corundumstudio.socketio.Configuration;
+import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 
 public class SocketManager {
@@ -11,9 +12,12 @@ public class SocketManager {
 
 	private SocketManager() {
 		Configuration config = new Configuration();
+
         config.setHostname("localhost"); // your external hostname
         config.setPort(7777);
-
+        SocketConfig socketConfig = new SocketConfig();
+        socketConfig.setReuseAddress(true);
+        config.setSocketConfig(socketConfig);
         server = new SocketIOServer(config);
 	}
 

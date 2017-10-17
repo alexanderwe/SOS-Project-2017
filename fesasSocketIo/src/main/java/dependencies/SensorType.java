@@ -10,7 +10,7 @@ public enum SensorType {
         this.value = value;
     }
 
-    static SensorType byValue(String value) {
+    public static SensorType byValue(String value) {
         for (SensorType type : SensorType.values()) {
             if (type.value.equals(value)) {
                 return type;

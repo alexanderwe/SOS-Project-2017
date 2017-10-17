@@ -34,14 +34,20 @@ public class SensorSocket {
         }
     }
 
-    public void sendSensorData(String data) throws ConnectException {
+    public void sendMessage(String key, Object data) throws ConnectException {
         if (this.connected) {
-            logger.info("Send sensor data to " + this.socketUrl);
-            socket.emit("sensorData", data);
+            logger.info("Send " + key +" with " + data + " to " + this.socketUrl);
+            socket.emit(key, data);
         } else {
             throw new ConnectException();
         }
+    }
 
+    public void connect(){
+        if (!this.connected) {
+            logger.info("Try to connect to " + this.socketUrl);
+            socket.connect();
+        }
     }
 
     public void close() {

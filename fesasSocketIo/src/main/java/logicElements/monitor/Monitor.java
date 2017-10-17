@@ -50,7 +50,8 @@ public class Monitor extends AbstractLogic implements IMonitorLogic {
 				// or
 				// this.sendArrayList(List); // for a list
 				// return sth. as status message (displayed by the AL
-				
+
+				/*
 				Context context = new Context();
 				
 				String completeSensorData = (String)data.getData();
@@ -58,7 +59,7 @@ public class Monitor extends AbstractLogic implements IMonitorLogic {
 				String[] sensors = completeSensorData.split(",");
 				
 				for(String sensorData: sensors){
-					System.out.println(sensorData);
+					System.out.println(sensorData);*/
 					/*String[] split = sensorData.split(":");
 					String sensorName = split[0];
 					String sensorValue = split[1];
@@ -83,15 +84,15 @@ public class Monitor extends AbstractLogic implements IMonitorLogic {
 					} catch (ContextException e) {
 						e.printStackTrace();
 					}*/
-				}
-				
-				this.sendData(context);
-				
+
 			}
-			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();
+
+			this.sendData("");
+
 		}
-		return "Not a KnowledgeRecord! It is: " + data.getClass().getSimpleName();
+		return "";
 	}
+
 	
 	// add further methods if needed
 
