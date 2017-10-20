@@ -2,6 +2,7 @@ package logicElements.planner;
 
 import java.util.HashMap;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
@@ -10,6 +11,7 @@ import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logi
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
+import logicElements.knowledge.Action;
 import logicElements.knowledge.AnalyzeTypes;
 
 /**
@@ -51,8 +53,9 @@ public class Planner extends AbstractLogic implements IPlannerLogic {
 				AnalyzeTypes analyzeTypes = AnalyzeTypes.valueOf(analyzeResult.get("result").getAsString());
 
 				switch (analyzeTypes) {
-					case LIGHT_LEVEL_LOW: this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", action: 'Turn on light' ,reason: " + AnalyzeTypes.LIGHT_LEVEL_LOW+"  }").getAsJsonObject());break;
-					case LIGHT_LEVEL_HIGH: this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", action: 'Turn off light' ,reason: " + AnalyzeTypes.LIGHT_LEVEL_HIGH+"  }").getAsJsonObject());break;
+					//TODO: Make this json creation a bit more practical than manually creating the strings
+					case LIGHT_LEVEL_LOW: this.sendData(new Action(resourceId, "Turn on light", analyzeTypes));break;
+					case LIGHT_LEVEL_HIGH: this.sendData(new Action(resourceId, "Turn off light", analyzeTypes));break;
 					default: break;
 				}
 			}

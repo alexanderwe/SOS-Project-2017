@@ -48,7 +48,7 @@ public class SocketIoEffector extends AbstractLogic implements IEffectorLogic {
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
 		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof JsonObject) { //substitute OBJECT with the expected data type
+			if (data.getData() instanceof String) { //substitute OBJECT with the expected data type
 				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
 				// use 
 				// this.sendData(Object); //for sending an object
@@ -57,7 +57,7 @@ public class SocketIoEffector extends AbstractLogic implements IEffectorLogic {
 				// return sth. as status message (displayed by the AL
 				
 				SocketIOClient client = server.getAllClients().toArray(new SocketIOClient[1])[0];
-				client.sendEvent("effectorData", ((JsonObject) data.getData()).toString());
+				client.sendEvent("effectorData", data.getData());
 				
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();

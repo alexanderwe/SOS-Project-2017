@@ -2,6 +2,7 @@ package logicElements.executor;
 
 import java.util.HashMap;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
@@ -9,6 +10,7 @@ import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logi
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
+import logicElements.knowledge.Action;
 
 /**
  * Description from meta data: 
@@ -42,7 +44,7 @@ public class Executor extends AbstractLogic implements IExecutorLogic {
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
 		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof JsonObject) { //substitute OBJECT with the expected data type
+			if (data.getData() instanceof Action) { //substitute OBJECT with the expected data type
 				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
 				// use 
 				// this.sendData(Object); //for sending an object
@@ -51,7 +53,7 @@ public class Executor extends AbstractLogic implements IExecutorLogic {
 				// return sth. as status message (displayed by the AL
 				
 				
-				this.sendData(data.getData());
+				this.sendData(new Gson().toJson(data.getData()));
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();
 		}
