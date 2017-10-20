@@ -3,12 +3,14 @@ package logicElements.planner;
 import java.util.HashMap;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IPlannerLogic;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
+import logicElements.knowledge.AnalyzeTypes;
 
 /**
  * Description from meta data: 
@@ -41,16 +43,18 @@ public class Planner extends AbstractLogic implements IPlannerLogic {
 	
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
-		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof JsonObject) { //substitute OBJECT with the expected data type
-				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
-				// use 
-				// this.sendData(Object); //for sending an object
-				// or
-				// this.sendArrayList(List); // for a list
-				// return sth. as status message (displayed by the AL
+		if (data instanceof KnowledgeRecord) {
+			if (data.getData() instanceof JsonObject) {
 
-				this.sendData(data.getData());
+				JsonObject analyzeResult = (JsonObject) data.getData();
+				String resourceId = analyzeResult.get("resourceId").getAsString();
+				AnalyzeTypes analyzeTypes = AnalyzeTypes.valueOf(analyzeResult.get("result").getAsString());
+
+				switch (analyzeTypes) {
+					case LIGHT_LEVEL_LOW: this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", action: 'Turn on light' ,reason: " + AnalyzeTypes.LIGHT_LEVEL_LOW+"  }").getAsJsonObject());break;
+					case LIGHT_LEVEL_HIGH: this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", action: 'Turn off light' ,reason: " + AnalyzeTypes.LIGHT_LEVEL_HIGH+"  }").getAsJsonObject());break;
+					default: break;
+				}
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();
 		}

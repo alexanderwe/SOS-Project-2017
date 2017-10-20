@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 
+import com.google.gson.JsonObject;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IEffectorLogic;
@@ -47,7 +48,7 @@ public class SocketIoEffector extends AbstractLogic implements IEffectorLogic {
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
 		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof String) { //substitute OBJECT with the expected data type
+			if (data.getData() instanceof JsonObject) { //substitute OBJECT with the expected data type
 				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
 				// use 
 				// this.sendData(Object); //for sending an object
@@ -56,8 +57,7 @@ public class SocketIoEffector extends AbstractLogic implements IEffectorLogic {
 				// return sth. as status message (displayed by the AL
 				
 				SocketIOClient client = server.getAllClients().toArray(new SocketIOClient[1])[0];
-				client.sendEvent("effectorData", (String) data.getData());
-				System.out.println(data.getData() + "Is now in the effector");
+				client.sendEvent("effectorData", ((JsonObject) data.getData()).toString());
 				
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();

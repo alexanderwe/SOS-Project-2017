@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IAnalyzerLogic;
@@ -11,6 +12,7 @@ import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.Inf
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
 import dependencies.PropertiesUtil;
+import logicElements.knowledge.AnalyzeTypes;
 import logicElements.knowledge.SensorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,10 +77,11 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
 					case SENSOR_TYPE_LIGHT:
 						if (sensorData.get("values").getAsJsonArray().get(0).getAsInt() >= Integer.parseInt(props.get("light.upper_threshold").toString())) {
 							System.out.println("we got a light level and we turn off the light now");
-							this.sendData(sensorData);
+							this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", result: " + AnalyzeTypes.LIGHT_LEVEL_HIGH+"  }").getAsJsonObject());
 						} else if (sensorData.get("values").getAsJsonArray().get(0).getAsInt() <= Integer.parseInt(props.get("light.lower_threshold").toString())){
 							System.out.println("we got a light level and we turn on the light now");
-							this.sendData(sensorData);
+							this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", result: " + AnalyzeTypes.LIGHT_LEVEL_LOW+"  }").getAsJsonObject());
+
 						}
 						break;
 					case SENSOR_TYPE_PERSON:

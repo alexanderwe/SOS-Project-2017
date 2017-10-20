@@ -40,7 +40,7 @@ public class MainController {
         this.sensorSocket = new SensorSocket("127.0.0.1", "7777");
         this.sensorSocket.getSocket().on("effectorData", args -> { // not that well separated
             logger.info("Data from FESAS: " + String.valueOf(args[0]));
-            this.fesasResultTextArea.setText(String.valueOf(args[0]));
+            this.fesasResultTextArea.setText(JsonService.toPrettyFormat(String.valueOf(args[0])));
         });
     }
 

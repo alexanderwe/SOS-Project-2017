@@ -51,7 +51,7 @@ public class Executor extends AbstractLogic implements IExecutorLogic {
 				// return sth. as status message (displayed by the AL
 				
 				
-				this.sendData("ExampleResult");
+				this.sendData(data.getData());
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();
 		}
