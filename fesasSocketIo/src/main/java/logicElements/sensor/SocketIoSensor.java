@@ -2,15 +2,9 @@ package logicElements.sensor;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
 
-import com.corundumstudio.socketio.AckRequest;
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.listener.DataListener;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.ISensorLogic;
@@ -18,8 +12,7 @@ import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.Inf
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
-import dependencies.MyContext;
-import dependencies.SensorType;
+import logicElements.knowledge.ContextWrapper;
 import dependencies.SocketManager;
 
 /**
@@ -45,14 +38,13 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 
 	//add variables here
 	private SocketIOServer server;
-	private MyContext context;
+	private ContextWrapper contextWrapper;
 	
 	@Override
 	public void initializeLogic(HashMap<String, String> properties) {
 
 		// Set up the socket io sever for communication with the client
 		server = SocketManager.getInstance().getServer();
-		context = new MyContext();
 		setupSocket();
 	}
 	
@@ -66,17 +58,6 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
 				// or
 				// this.sendArrayList(List); // for a list
 				// return sth. as status message (displayed by the AL
-				JsonObject jsonObject = new JsonParser().parse((String) data.getData()).getAsJsonObject();
-				try {
-					String resourceId = jsonObject.get("resourceId").getAsString();
-					SensorType  sensorType = SensorType.byValue(jsonObject.get("sensorType").getAsString());
-					JsonObject jsonData = jsonObject.getAsJsonObject("data");
-					context.put(resourceId,sensorType ,jsonData );
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
 				this.sendData(data.getData());
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();

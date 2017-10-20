@@ -1,14 +1,19 @@
 package logicElements.analyzer;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import com.google.gson.JsonObject;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IAnalyzerLogic;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
-import dependencies.Context;
+import dependencies.PropertiesUtil;
+import logicElements.knowledge.SensorType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Description from meta data: 
@@ -19,7 +24,9 @@ import dependencies.Context;
  *
  */
 public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
-	
+
+	final static Logger logger = LogManager.getLogger(Analyzer.class);
+
 	public Analyzer() {
 		super();	
 		supportedInformationTypes.add(InformationType.Monitoring_DEFAULT);
@@ -32,27 +39,56 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
 	// do not change anything above this line (except of adding import statements)
 
 	//add variables here
-	
+	private Map props;
+
+
 	@Override
 	public void initializeLogic(HashMap<String, String> properties) {
-		//use this method for initializing variables, etc.
-		// if there is nothing to do, delete it
+		try {
+			props = PropertiesUtil.loadFromClasspath("analyzer.properties");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
+
+	/**
+	 * Analyzes the data based on the properties defined in resources/analyzer.properties
+	 * @param data
+	 * @return
+	 */
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
-		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof Context) { //substitute OBJECT with the expected data type
-				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
-				// use 
-				// this.sendData(Object); //for sending an object
-				// or
-				// this.sendArrayList(List); // for a list
-				// return sth. as status message (displayed by the AL
-				
-				Context monitorData = (Context)data.getData();
-				
-				this.sendData("");
+		if (data instanceof KnowledgeRecord) {
+			if (data.getData() instanceof JsonObject) {
+
+
+				System.out.println("In Analyzer");
+
+				//Extract mandatory data of the JsonObject
+				JsonObject sensor = (JsonObject) data.getData();
+				String resourceId = sensor.get("resourceId").getAsString();
+				SensorType sensorType = SensorType.byValue(sensor.get("sensorType").getAsString());
+				JsonObject sensorData = sensor.getAsJsonObject("data");
+
+
+				switch (sensorType) {
+					case SENSOR_TYPE_LIGHT:
+						if (sensorData.get("values").getAsJsonArray().get(0).getAsInt() >= Integer.parseInt(props.get("light.upper_threshold").toString())) {
+							System.out.println("we got a light level and we turn off the light now");
+							this.sendData(sensorData);
+						} else if (sensorData.get("values").getAsJsonArray().get(0).getAsInt() <= Integer.parseInt(props.get("light.lower_threshold").toString())){
+							System.out.println("we got a light level and we turn on the light now");
+							this.sendData(sensorData);
+						}
+						break;
+					case SENSOR_TYPE_PERSON:
+						break;
+					default:
+						break;
+				}
+
+
+
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();
 		}

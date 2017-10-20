@@ -30,8 +30,7 @@ public class AdaptationLogicTemplate implements IAdaptationLogic {
 	public void prepareDataForSending(Object data, String type) {
 		if (successor != null) {
 			PseudoLogger.log(getClass().getName(), "prepareDataForSending()","Call logic in : " + name);
-			KnowledgeRecord k = new KnowledgeRecord(data, type, 
-					infoCategory.name(), name, System.currentTimeMillis());
+			KnowledgeRecord k = new KnowledgeRecord(data, type, infoCategory.name(), name, System.currentTimeMillis());
 			successor.callLogic(k);	
 		} else {
 			PseudoLogger.log(name, "prepareDataForSending()","Last element reached in chain. Data received : ");

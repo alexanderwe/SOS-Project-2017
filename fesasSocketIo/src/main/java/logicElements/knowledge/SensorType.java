@@ -1,10 +1,10 @@
-package dependencies;
+package logicElements.knowledge;
 
 public enum SensorType {
     SENSOR_TYPE_LIGHT ("SENSOR.TYPE_LIGHT"),
     SENSOR_TYPE_PERSON("SENSOR.TYPE_PERSON");
 
-    String value;
+    public String value;
 
     SensorType(String value) {
         this.value = value;

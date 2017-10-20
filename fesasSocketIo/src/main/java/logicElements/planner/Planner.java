@@ -2,6 +2,7 @@ package logicElements.planner;
 
 import java.util.HashMap;
 
+import com.google.gson.JsonObject;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IPlannerLogic;
@@ -41,15 +42,15 @@ public class Planner extends AbstractLogic implements IPlannerLogic {
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
 		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof String) { //substitute OBJECT with the expected data type
+			if (data.getData() instanceof JsonObject) { //substitute OBJECT with the expected data type
 				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
 				// use 
 				// this.sendData(Object); //for sending an object
 				// or
 				// this.sendArrayList(List); // for a list
 				// return sth. as status message (displayed by the AL
-				
-				this.sendData("");
+
+				this.sendData(data.getData());
 			}
 			return "Not the expected data type! It is: " + data.getData().getClass().getSimpleName();
 		}

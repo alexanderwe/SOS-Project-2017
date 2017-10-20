@@ -68,8 +68,6 @@ public class DummySAS {
 		 * variable "probeData".
 		 */
 		AdaptationLogicTemplate startingComponent = sensor;
-		//runTest(startingComponent);
-		System.out.println("start test");
 	}
 
 	

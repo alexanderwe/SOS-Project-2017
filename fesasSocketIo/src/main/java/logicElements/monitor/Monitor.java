@@ -1,15 +1,15 @@
 package logicElements.monitor;
 
-import java.util.HashMap;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IMonitorLogic;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
-import dependencies.Context;
-import dependencies.ContextException;
+import logicElements.knowledge.ContextWrapper;
+import logicElements.knowledge.SensorType;
 
 /**
  * Description from meta data: 
@@ -32,68 +32,32 @@ public class Monitor extends AbstractLogic implements IMonitorLogic {
 
 	// do not change anything above this line (except of adding import statements)
 
-	//add variables here
-	
-	@Override
-	public void initializeLogic(HashMap<String, String> properties) {
-		//use this method for initializing variables, etc.
-		// if there is nothing to do, delete it
-	}
-	
+	/**
+	 * Adds the sensor data to the current context
+	 * Converts string into JsonObject and sends this to the analyzer component
+	 * @param data
+	 * @return
+	 */
 	@Override
 	public String callLogic(IKnowledgeRecord data) {
-		if (data instanceof KnowledgeRecord) { //substitute Object with the expected data type
-			if (data.getData() instanceof String) { //substitute OBJECT with the expected data type
-				//data.getData() return the actual data. The other properties of data is metadata (e.g., time stamps).
-				// use 
-				// this.sendData(Object); //for sending an object
-				// or
-				// this.sendArrayList(List); // for a list
-				// return sth. as status message (displayed by the AL
+		if (data instanceof KnowledgeRecord) {
+			if (data.getData() instanceof String) {
 
-				/*
-				Context context = new Context();
-				
-				String completeSensorData = (String)data.getData();
-				
-				String[] sensors = completeSensorData.split(",");
-				
-				for(String sensorData: sensors){
-					System.out.println(sensorData);*/
-					/*String[] split = sensorData.split(":");
-					String sensorName = split[0];
-					String sensorValue = split[1];
-					
-					final String objectId = "AndroidPhone";
-					try{
-						if(sensorName.equals("android.sensor.gyroscope")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_STRING);
-						}else if(sensorName.equals("android.sensor.accelerometer")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_STRING);
-						}else if(sensorName.equals("android.sensor.proximity")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_DOUBLE);
-						}else if(sensorName.equals("Location")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_STRING);
-						}else if(sensorName.equals("android.sensor.pressure")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_DOUBLE);
-						}else if(sensorName.equals("android.sensor.magnetic_field")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_STRING);
-						}else if(sensorName.equals("android.sensor.light")){
-							context.putEntry(objectId, sensorName, sensorValue, Context.UNIT_NONE, Context.TYPE_DOUBLE);
-						}
-					} catch (ContextException e) {
-						e.printStackTrace();
-					}*/
+				JsonObject jsonObject = new JsonParser().parse((String) data.getData()).getAsJsonObject();
+				try {
 
+					String resourceId = jsonObject.get("resourceId").getAsString();
+					SensorType sensorType = SensorType.byValue(jsonObject.get("sensorType").getAsString());
+					JsonObject jsonData = jsonObject.getAsJsonObject("data");
+
+					ContextWrapper.getInstance().put(resourceId,sensorType ,jsonData); // Add the retrieved data to the state management
+
+					this.sendData(jsonObject);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-
-			this.sendData("");
-
 		}
 		return "";
 	}
-
-	
-	// add further methods if needed
-
 }
