@@ -12,6 +12,7 @@ import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.Inf
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
 import logicElements.knowledge.Action;
+import logicElements.knowledge.ActionType;
 import logicElements.knowledge.AnalyzeTypes;
 
 /**
@@ -50,12 +51,14 @@ public class Planner extends AbstractLogic implements IPlannerLogic {
 
 				JsonObject analyzeResult = (JsonObject) data.getData();
 				String resourceId = analyzeResult.get("resourceId").getAsString();
-				AnalyzeTypes analyzeTypes = AnalyzeTypes.valueOf(analyzeResult.get("result").getAsString());
+				String reason = analyzeResult.get("reason").getAsString();
+				System.out.println(analyzeResult);
+				System.out.println(analyzeResult.get("action").getAsString());
+				ActionType actionType = ActionType.valueOf(analyzeResult.get("action").getAsString());
 
-				switch (analyzeTypes) {
-					//TODO: Make this json creation a bit more practical than manually creating the strings
-					case LIGHT_LEVEL_LOW: this.sendData(new Action(resourceId, "Turn on light", analyzeTypes));break;
-					case LIGHT_LEVEL_HIGH: this.sendData(new Action(resourceId, "Turn off light", analyzeTypes));break;
+				switch (actionType) {
+					case LIGHT_TURN_ON: this.sendData(new Action(resourceId, ActionType.LIGHT_TURN_ON, reason));break;
+					case LIGHT_TURN_OFF: this.sendData(new Action(resourceId, ActionType.LIGHT_TURN_OFF, reason));break;
 					default: break;
 				}
 			}

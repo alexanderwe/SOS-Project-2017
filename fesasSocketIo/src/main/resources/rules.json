@@ -1,0 +1,18 @@
+{
+    "rules": {
+        "SENSOR_TYPE_LIGHT": {
+            "conditions": [
+                {
+                    "name": "LIGHT_LEVEL_LOW",
+                    "eval": "function (lightLevel) { return lightLevel < 20}",
+                    "action": "LIGHT_TURN_ON"
+                },
+                {
+                    "name": "LIGHT_LEVEL_HIGH",
+                    "eval": "function (lightLevel) { return lightLevel > 20}",
+                    "action": "LIGHT_TURN_OFF"
+                }
+            ]
+        }
+    }
+}

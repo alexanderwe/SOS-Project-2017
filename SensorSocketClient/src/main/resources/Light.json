@@ -1,5 +1,5 @@
 {
-  "sensorType": "SENSOR.TYPE_LIGHT",
+  "sensorType": "SENSOR_TYPE_LIGHT",
   "resourceId": "1aadjadj",
   "data": {
     "values": [100]

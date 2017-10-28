@@ -1,8 +1,8 @@
 package logicElements.analyzer;
 
 import java.util.HashMap;
-import java.util.Map;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
@@ -11,11 +11,18 @@ import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logi
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.information.InformationType;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnowledgeRecord;
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
-import dependencies.PropertiesUtil;
+import dependencies.RulesUtil;
+import jdk.nashorn.api.scripting.JSObject;
+import logicElements.knowledge.ActionType;
 import logicElements.knowledge.AnalyzeTypes;
 import logicElements.knowledge.SensorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * Description from meta data: 
@@ -41,54 +48,54 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
 	// do not change anything above this line (except of adding import statements)
 
 	//add variables here
-	private Map props;
-
+	JsonObject rules;
+	ScriptEngine engine;
 
 	@Override
 	public void initializeLogic(HashMap<String, String> properties) {
 		try {
-			props = PropertiesUtil.loadFromClasspath("analyzer.properties");
+			rules = RulesUtil.loadFromClasspath("rules.json");
+			engine = new ScriptEngineManager().getEngineByName("nashorn");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Analyzes the data based on the properties defined in resources/analyzer.properties
+	 * Analyzes the data based on the properties defined in resources/rules.json
 	 * @param data
 	 * @return
 	 */
 	@Override
-	public String callLogic(IKnowledgeRecord data) {
+	public String callLogic(IKnowledgeRecord data)  {
 		if (data instanceof KnowledgeRecord) {
 			if (data.getData() instanceof JsonObject) {
 
+				try {
+					System.out.println("In Analyzer");
+					//Extract mandatory data of the JsonObject
+					JsonObject sensor = (JsonObject) data.getData();
+					String resourceId = sensor.get("resourceId").getAsString();
+					SensorType sensorType = SensorType.byValue(sensor.get("sensorType").getAsString());
+					JsonObject sensorData = sensor.getAsJsonObject("data");
 
-				System.out.println("In Analyzer");
+					for (JsonElement condition: rules.getAsJsonObject(sensorType.toString()).getAsJsonArray("conditions")){
 
-				//Extract mandatory data of the JsonObject
-				JsonObject sensor = (JsonObject) data.getData();
-				String resourceId = sensor.get("resourceId").getAsString();
-				SensorType sensorType = SensorType.byValue(sensor.get("sensorType").getAsString());
-				JsonObject sensorData = sensor.getAsJsonObject("data");
+						JsonObject currentCondition = condition.getAsJsonObject();
+						String name = currentCondition.get("name").getAsString();
+						String eval = currentCondition.get("eval").getAsString();
+						String action = currentCondition.get("action").getAsString();
 
-
-				switch (sensorType) {
-					case SENSOR_TYPE_LIGHT:
-						if (sensorData.get("values").getAsJsonArray().get(0).getAsInt() >= Integer.parseInt(props.get("light.upper_threshold").toString())) {
-							System.out.println("we got a light level and we turn off the light now");
-							this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", result: " + AnalyzeTypes.LIGHT_LEVEL_HIGH+"  }").getAsJsonObject());
-						} else if (sensorData.get("values").getAsJsonArray().get(0).getAsInt() <= Integer.parseInt(props.get("light.lower_threshold").toString())){
-							System.out.println("we got a light level and we turn on the light now");
-							this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", result: " + AnalyzeTypes.LIGHT_LEVEL_LOW+"  }").getAsJsonObject());
-
+						if ((boolean) ((JSObject) engine.eval(eval)).call(null,sensorData.get("values").getAsJsonArray().get(0).getAsInt())) {
+							this.sendData(new JsonParser().parse("{resourceId: " + resourceId +", action: " + ActionType.byValue(action)+", reason: " + name + "}").getAsJsonObject());
 						}
-						break;
-					case SENSOR_TYPE_PERSON:
-						break;
-					default:
-						break;
+
+					}
+				} catch (Exception e){
+					e.printStackTrace();
 				}
+
+
 
 
 

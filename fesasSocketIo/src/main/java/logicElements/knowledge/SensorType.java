@@ -1,8 +1,8 @@
 package logicElements.knowledge;
 
 public enum SensorType {
-    SENSOR_TYPE_LIGHT ("SENSOR.TYPE_LIGHT"),
-    SENSOR_TYPE_PERSON("SENSOR.TYPE_PERSON");
+    SENSOR_TYPE_LIGHT ("SENSOR_TYPE_LIGHT"),
+    SENSOR_TYPE_PERSON("SENSOR_TYPE_PERSON");
 
     public String value;
 

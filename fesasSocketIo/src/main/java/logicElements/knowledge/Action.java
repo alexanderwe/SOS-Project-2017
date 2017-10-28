@@ -3,14 +3,14 @@ package logicElements.knowledge;
 public class Action {
 
     private String resourceId;
-    private String action;
-    private AnalyzeTypes reason;
+    private ActionType actionType;
+    private String reason;
 
 
 
-    public Action (String resourceId, String action, AnalyzeTypes reason){
+    public Action (String resourceId, ActionType actionType, String reason){
         this.resourceId = resourceId;
-        this.action = action;
+        this.actionType = actionType;
         this.reason = reason;
     }
 }

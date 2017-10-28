@@ -1,5 +1,5 @@
 {
-  "sensorType": "SENSOR.TYPE_PERSON",
+  "sensorType": "SENSOR_TYPE_PERSON",
   "resourceId": "1aadjadj",
   "data": {
     "room": 1,
