@@ -1,5 +1,5 @@
 {
-  "sensorType": "SENSOR_TYPE_LIGHT",
+  "sensorType": "SENSOR_TYPE_LIGHT_LEVEL",
   "resourceId": "1aadjadj",
   "data": {
     "value": 100

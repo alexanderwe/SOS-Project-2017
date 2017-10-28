@@ -171,7 +171,63 @@ public class MainController implements SocketEventListener{
                     }
                     break;
                 case WINDOW_OPEN:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_WINDOW\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"closed\": false\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
                     break;
+                case LIGHT_TURN_ON:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_LIGHT_BULB\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"on\": true\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case LIGHT_TURN_OFF:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_LIGHT_BULB\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"on\": false\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case TURN_OFF_ALL:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_LIGHT_BULB\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"on\": false\n" +
+                                "  }\n" +
+                                "}");
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_WINDOW\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"closed\": true\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
                 default: break;
             }
 

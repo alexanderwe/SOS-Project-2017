@@ -5,6 +5,7 @@ public enum ActionType {
     LIGHT_TURN_OFF("LIGHT_TURN_OFF"),
     WINDOW_OPEN("WINDOW_OPEN"),
     WINDOW_CLOSE("WINDOW_CLOSE"),
+    TURN_OFF_ALL("TURN_OFF_ALL"),
     DO_NOTHING("DO_NOTHING");
 
     public String value;

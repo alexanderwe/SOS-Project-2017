@@ -1,0 +1,7 @@
+{
+  "sensorType": "SENSOR_TYPE_LIGHT_BULB",
+  "resourceId": "1aadjadj",
+  "data": {
+    "on": false
+  }
+}

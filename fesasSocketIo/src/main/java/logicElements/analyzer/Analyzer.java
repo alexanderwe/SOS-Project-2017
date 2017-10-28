@@ -90,6 +90,7 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
 
                     int personCount = 0; // If no person is recognized yet the personCount will be 0
                     boolean windowClosed = true;
+                    boolean lightOn = false;
 
 
                     try {
@@ -104,9 +105,16 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
                         logger.error("Window closed not initialized");
                     }
 
+                    try {
+                        lightOn = ContextWrapper.getInstance().getContext().get(resourceId).get("SENSOR_TYPE_LIGHT_BULB").get(0).get("on").getAsBoolean();
+                    } catch (Exception e) {
+                        logger.error("Light on not initialized");
+                    }
+
 
                     logger.info("Person count: " + personCount);
                     logger.info("Window closed: " + windowClosed);
+                    logger.info("Light on: " + lightOn);
 
                     for (JsonElement condition : rules.getAsJsonObject(sensorType.toString()).getAsJsonArray("conditions")) {
 
@@ -120,7 +128,7 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
 
                         switch (sensorType) {
                             case SENSOR_TYPE_LIGHT: {
-                                boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount);
+                                boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount, lightOn);
 
                                 if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
                                     this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
@@ -132,6 +140,16 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
                             }
                             case SENSOR_TYPE_HUMIDITY: {
                                 boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount, windowClosed);
+
+                                if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
+                                    this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
+                                    conditionSatisfied = true;
+                                    break; // if we have found the first rule that is satisfied we can stop
+                                }
+                                break;
+                            }
+                            case SENSOR_TYPE_PERSON: {
+                                boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null);
 
                                 if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
                                     this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());

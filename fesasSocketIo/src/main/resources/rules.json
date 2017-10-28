@@ -5,13 +5,13 @@
                 {
                     "name": "LIGHT_LEVEL_LOW",
                     "eval": "function (lightLevel, actionAllowed) { return lightLevel < 20 && actionAllowed}",
-                    "condition": "function (dayEnd, personCount) { return dayEnd < new Date().getHours() && personCount > 0 }",
+                    "condition": "function (dayEnd, personCount, lightOn) { return dayEnd < new Date().getHours() && personCount > 0 && !lightOn}",
                     "action": "LIGHT_TURN_ON"
                 },
                 {
                     "name": "LIGHT_LEVEL_HIGH",
                     "eval": "function (lightLevel, actionAllowed) { return lightLevel > 20 && actionAllowed}",
-                    "condition": "function (dayEnd, personCount) { return true }",
+                    "condition": "function (dayEnd, personCount, lightOn) { return true }",
                     "action": "LIGHT_TURN_OFF"
                 }
             ]
@@ -35,9 +35,10 @@
         "SENSOR_TYPE_PERSON": {
             "conditions": [
                 {
-                    "name": "PERSON_ENTERS_ROOM",
-                    "eval": "function (count, max) { return count > max}",
-                    "action": "ADAPT_LOGIN_SECURITY"
+                    "name": "PERSON_NONE",
+                    "eval": "function (count, actionAllowed) { return count == 0}",
+                    "condition": "function() {return true }",
+                    "action": "TURN_OFF_ALL"
                 }
             ]
         }
