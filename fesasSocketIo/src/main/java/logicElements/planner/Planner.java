@@ -2,9 +2,7 @@ package logicElements.planner;
 
 import java.util.HashMap;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.AbstractLogic;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.LogicType;
 import de.mannheim.wifo2.fesas.logicRepositoryStructure.data.metadata.logic.logicInterfaces.IPlannerLogic;
@@ -13,7 +11,6 @@ import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnow
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
 import logicElements.knowledge.Action;
 import logicElements.knowledge.ActionType;
-import logicElements.knowledge.AnalyzeTypes;
 
 /**
  * Description from meta data: 
@@ -52,13 +49,15 @@ public class Planner extends AbstractLogic implements IPlannerLogic {
 				JsonObject analyzeResult = (JsonObject) data.getData();
 				String resourceId = analyzeResult.get("resourceId").getAsString();
 				String reason = analyzeResult.get("reason").getAsString();
-				System.out.println(analyzeResult);
-				System.out.println(analyzeResult.get("action").getAsString());
 				ActionType actionType = ActionType.valueOf(analyzeResult.get("action").getAsString());
 
+				System.out.println(actionType);
 				switch (actionType) {
 					case LIGHT_TURN_ON: this.sendData(new Action(resourceId, ActionType.LIGHT_TURN_ON, reason));break;
 					case LIGHT_TURN_OFF: this.sendData(new Action(resourceId, ActionType.LIGHT_TURN_OFF, reason));break;
+					case WINDOW_CLOSE: this.sendData(new Action(resourceId, ActionType.WINDOW_CLOSE, reason));break;
+					case WINDOW_OPEN: this.sendData(new Action(resourceId, ActionType.WINDOW_OPEN, reason));break;
+					case DO_NOTHING: this.sendData(new Action(resourceId, ActionType.DO_NOTHING, reason));break;
 					default: break;
 				}
 			}

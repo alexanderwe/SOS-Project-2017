@@ -14,6 +14,8 @@ import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.IKnow
 import de.mannheim.wifo2.fesas.sasStructure.data.adaptationLogic.knowledge.KnowledgeRecord;
 import logicElements.knowledge.ContextWrapper;
 import dependencies.SocketManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Description from meta data: 
@@ -24,7 +26,9 @@ import dependencies.SocketManager;
  *
  */
 public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
-	
+
+	final static Logger logger = LogManager.getLogger(SocketIoSensor.class);
+
 	public SocketIoSensor() {
 		super();	
 		supportedInformationTypes.add(InformationType.Probe_SIMPLE_MANAGED_RESOURCES);
@@ -73,16 +77,16 @@ public class SocketIoSensor extends AbstractLogic implements ISensorLogic {
         });
 
 		server.addEventListener("shutdown", String.class, (client, data, ackRequest) -> {
-			System.out.println("Server will stop");
+			logger.info("Server will stop");
 			System.exit(1);
 			server.stop();
-			System.out.println("Server stopped");
+			logger.info("Server stopped");
 
 		});
 
 
         server.start();
-		System.out.println("Server started");
+		logger.info("Server started");
 
 	}
 	

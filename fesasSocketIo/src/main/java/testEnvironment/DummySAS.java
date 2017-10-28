@@ -74,8 +74,6 @@ public class DummySAS {
 	private void initializeTestData() {
 		String ownerID = "fesasID-000_1_007";
 		long timeStamp = 1456129173400l;
-		System.out.println("Init test data");
-		
 		String testData1 = "{}";
 		buildKnowledgeRecord(InformationType.DEFAULT, InformationCategory.DEFAULT, ownerID, timeStamp, testData1);
 

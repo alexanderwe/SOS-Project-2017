@@ -27,7 +27,7 @@ public class Main extends Application {
         mainController = (MainController) loader.getController();
 
         primaryStage.setTitle("Sensor Socket Client");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
 
     }

@@ -4,6 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
 <VBox id="vbox" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.121"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
     <MenuBar fx:id="menuBar">
@@ -28,16 +30,34 @@
             </Menu>
         </menus>
     </MenuBar>
-    <VBox id="vbox" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.121"
+    <VBox id="vbox" prefHeight="600" prefWidth="800" spacing="10" xmlns="http://javafx.com/javafx/8.0.121"
           xmlns:fx="http://javafx.com/fxml/1">
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
         </padding>
 
+        <Label text="FESAS Data "></Label>
         <TextArea fx:id="jsonTextArea" GridPane.rowIndex="1"/>
         <Button onAction="#sendJSON" text="Send JSON sensor data to FESAS"/>
-        <Label fx:id="errorLabel" GridPane.rowIndex="3"/>
-        <Label text="FESAS Result"/>
-        <TextArea fx:id="fesasResultTextArea"/>
+        <HBox>
+            <Label text="Error: "></Label>   <Label fx:id="errorLabelText"/>
+        </HBox>
+
+
+            <HBox spacing="5">
+                <VBox>
+                    <Label text="FESAS Result"/>
+                    <TextArea fx:id="fesasResultTextArea"/>
+                </VBox>
+                <VBox>
+                    <Label text="FESAS Context"/>
+                    <TextArea fx:id="fesasContextTextArea"/>
+                </VBox>
+            </HBox>
+        <Label text="Last sent data to FESAS "></Label>
+        <TextArea fx:id="lastSentData"></TextArea>
+        <HBox spacing="5">
+            <Label text="Info: "></Label>   <Label fx:id="infoLabelText"/>
+        </HBox>
     </VBox>
 </VBox>

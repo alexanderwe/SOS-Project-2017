@@ -46,14 +46,10 @@ public class Monitor extends AbstractLogic implements IMonitorLogic {
 				JsonObject jsonObject = new JsonParser().parse((String) data.getData()).getAsJsonObject();
 				try {
 
+					//Extract necessary information out of the sensor data object
 					String resourceId = jsonObject.get("resourceId").getAsString();
 					SensorType sensorType = SensorType.byValue(jsonObject.get("sensorType").getAsString());
 					JsonObject jsonData = jsonObject.getAsJsonObject("data");
-
-					System.out.println(resourceId);
-					System.out.println(sensorType);
-					System.out.println(jsonData);
-
 
 					ContextWrapper.getInstance().put(resourceId,sensorType ,jsonData); // Add the retrieved data to the state management
 

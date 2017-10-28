@@ -1,6 +1,7 @@
 package controller;
 
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -12,18 +13,20 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import knowledge.ActionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import service.FileService;
 import service.JsonService;
 import socketIo.SensorSocket;
+import socketIo.SocketEventListener;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 
 
-public class MainController {
+public class MainController implements SocketEventListener{
 
     final static Logger logger = LogManager.getLogger(MainController.class);
 
@@ -32,52 +35,60 @@ public class MainController {
     @FXML
     public TextArea fesasResultTextArea;
     @FXML
-    public Label errorLabel;
+    public TextArea fesasContextTextArea;
+    @FXML
+    public TextArea lastSentData;
+    @FXML
+    public Label errorLabelText;
+    @FXML
+    public Label infoLabelText;
 
     private SensorSocket sensorSocket;
 
-    public MainController() {
+    public MainController(){
         this.sensorSocket = new SensorSocket("127.0.0.1", "7777");
-        this.sensorSocket.getSocket().on("effectorData", args -> { // not that well separated
-            logger.info("Data from FESAS: " + String.valueOf(args[0]));
-            this.fesasResultTextArea.setText(JsonService.toPrettyFormat(String.valueOf(args[0])));
-        });
+        this.sensorSocket.addListener(this);
+    }
+
+    @FXML
+    public void initialize() {
     }
 
     public void sendJSON(ActionEvent actionEvent) {
-        errorLabel.setText("");
-        errorLabel.setTextFill(Color.web("#000000"));
+        errorLabelText.setText("");
+        this.fesasResultTextArea.setText("");
+        errorLabelText.setTextFill(Color.web("#000000"));
         try {
             JsonObject jsonObject = new JsonParser().parse(jsonTextArea.getText()).getAsJsonObject(); // To check if JSON is valid
             sensorSocket.sendMessage("sensorData", jsonTextArea.getText());
         } catch (JsonSyntaxException ilse) {
             logger.error("Not a valid JSON string");
-            errorLabel.setText("Not a valid JSON string");
-            errorLabel.setTextFill(Color.web("#FF0000"));
+            errorLabelText.setText("Not a valid JSON string");
+            errorLabelText.setTextFill(Color.web("#FF0000"));
         } catch (IllegalStateException ilse) {
             logger.error("Not a valid JSON string");
-            errorLabel.setText("Not a valid JSON string");
-            errorLabel.setTextFill(Color.web("#FF0000"));
+            errorLabelText.setText("Not a valid JSON string");
+            errorLabelText.setTextFill(Color.web("#FF0000"));
         } catch (ConnectException conex) {
             logger.error("Socket is not connected");
-            errorLabel.setText("Socket is not connected to the FESAS system");
-            errorLabel.setTextFill(Color.web("#FF0000"));
+            errorLabelText.setText("Socket is not connected to the FESAS system");
+            errorLabelText.setTextFill(Color.web("#FF0000"));
         }
     }
 
     public void prettyPrint() {
-        errorLabel.setText("");
-        errorLabel.setTextFill(Color.web("#000000"));
+        errorLabelText.setText("");
+        errorLabelText.setTextFill(Color.web("#000000"));
         try {
             jsonTextArea.setText(JsonService.toPrettyFormat(jsonTextArea.getText()));
         } catch (JsonSyntaxException ilse) {
             logger.error("Not a valid JSON string");
-            errorLabel.setText("Not a valid JSON string");
-            errorLabel.setTextFill(Color.web("#FF0000"));
+            errorLabelText.setText("Not a valid JSON string");
+            errorLabelText.setTextFill(Color.web("#FF0000"));
         } catch (IllegalStateException ilse) {
             logger.error("Not a valid JSON string");
-            errorLabel.setText("Not a valid JSON string");
-            errorLabel.setTextFill(Color.web("#FF0000"));
+            errorLabelText.setText("Not a valid JSON string");
+            errorLabelText.setTextFill(Color.web("#FF0000"));
         }
     }
 
@@ -99,8 +110,8 @@ public class MainController {
             jsonTextArea.setText(JsonService.toPrettyFormat(fileContent));
         } catch (IOException ioe) {
             logger.error("Error reading imported file");
-            errorLabel.setText("Error reading file");
-            errorLabel.setTextFill(Color.web("#FF0000"));
+            errorLabelText.setText("Error reading file");
+            errorLabelText.setTextFill(Color.web("#FF0000"));
         } catch (NullPointerException npe) {
             logger.warn("No file selected");
         }
@@ -119,6 +130,68 @@ public class MainController {
 
     public void setSensorSocket(SensorSocket sensorSocket) {
         this.sensorSocket = sensorSocket;
+    }
+
+    @Override
+    public void socketConnected() {
+        Platform.runLater(() -> {
+            infoLabelText.setText("Connected to FESAS");
+            infoLabelText.setTextFill(Color.web("#000000"));
+        });
+    }
+
+    @Override
+    public void socketDisconnected() {
+        Platform.runLater(() -> {
+            infoLabelText.setText("Socket is not connected to the FESAS system");
+            infoLabelText.setTextFill(Color.web("#FF0000"));
+        });
+    }
+
+
+    @Override
+    public void retrievedEffectorData(Object... data) {
+        Platform.runLater(() -> {
+            this.fesasResultTextArea.setText(JsonService.toPrettyFormat(String.valueOf(data[0])));
+
+            JsonElement retrievedData = new JsonParser().parse(String.valueOf(data[0]));
+            ActionType actionType = ActionType.byValue(retrievedData.getAsJsonObject().get("actionType").getAsString());
+            switch (actionType) {
+                case WINDOW_CLOSE:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_WINDOW\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"closed\": true\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case WINDOW_OPEN:
+                    break;
+                default: break;
+            }
+
+
+        });
+    }
+
+
+    @Override
+    public void retrievedContextData(Object... data) {
+        Platform.runLater(() -> {
+            this.fesasContextTextArea.setText(JsonService.toPrettyFormat(String.valueOf(data[0])));
+        });
+    }
+
+    @Override
+    public void socketHasSentData(Object data) {
+        Platform.runLater(() -> {
+            this.lastSentData.setText(JsonService.toPrettyFormat(String.valueOf(data)));
+        });
     }
 }
 

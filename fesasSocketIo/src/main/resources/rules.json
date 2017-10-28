@@ -4,13 +4,40 @@
             "conditions": [
                 {
                     "name": "LIGHT_LEVEL_LOW",
-                    "eval": "function (lightLevel) { return lightLevel < 20}",
+                    "eval": "function (lightLevel, actionAllowed) { return lightLevel < 20 && actionAllowed}",
+                    "condition": "function (dayEnd, personCount) { return dayEnd < new Date().getHours() && personCount > 0 }",
                     "action": "LIGHT_TURN_ON"
                 },
                 {
                     "name": "LIGHT_LEVEL_HIGH",
-                    "eval": "function (lightLevel) { return lightLevel > 20}",
+                    "eval": "function (lightLevel, actionAllowed) { return lightLevel > 20 && actionAllowed}",
+                    "condition": "function (dayEnd, personCount) { return true }",
                     "action": "LIGHT_TURN_OFF"
+                }
+            ]
+        },
+        "SENSOR_TYPE_HUMIDITY": {
+            "conditions": [
+                {
+                    "name": "RAIN_START",
+                    "eval": "function (humidity, actionAllowed) { return humidity > 70 && actionAllowed}",
+                    "condition": "function (dayEnd, personCount, windowClosed) { return !windowClosed }",
+                    "action": "WINDOW_CLOSE"
+                },
+                {
+                    "name": "RAIN_END",
+                    "eval": "function (humidity, actionAllowed) { return humidity < 70 && actionAllowed}",
+                    "condition": "function (dayEnd, personCount, windowClosed) { return dayEnd < new Date().getHours() && personCount > 0 && windowClosed }",
+                    "action": "WINDOW_OPEN"
+                }
+            ]
+        },
+        "SENSOR_TYPE_PERSON": {
+            "conditions": [
+                {
+                    "name": "PERSON_ENTERS_ROOM",
+                    "eval": "function (count, max) { return count > max}",
+                    "action": "ADAPT_LOGIN_SECURITY"
                 }
             ]
         }

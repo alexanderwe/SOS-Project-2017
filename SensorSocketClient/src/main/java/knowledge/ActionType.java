@@ -1,4 +1,4 @@
-package logicElements.knowledge;
+package knowledge;
 
 public enum ActionType {
     LIGHT_TURN_ON("LIGHT_TURN_ON"),

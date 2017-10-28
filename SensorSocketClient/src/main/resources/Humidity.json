@@ -1,0 +1,7 @@
+{
+  "sensorType": "SENSOR_TYPE_HUMIDITY",
+  "resourceId": "1aadjadj",
+  "data": {
+    "value": 60
+  }
+}
