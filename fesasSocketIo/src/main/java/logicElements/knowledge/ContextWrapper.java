@@ -52,6 +52,7 @@ public class ContextWrapper {
             resourceEntries.put(sensorType.value, datas);
             this.context.put(resourceId, resourceEntries);
         } else {
+            System.out.println(this.context.get(sensorType.value));
             if (this.context.get(resourceId).get(sensorType.value) == null) {
                 ArrayList<JsonObject> datas = new ArrayList();
                 datas.add(data);

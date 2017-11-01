@@ -57,6 +57,8 @@ public class Planner extends AbstractLogic implements IPlannerLogic {
 					case LIGHT_TURN_OFF: this.sendData(new Action(resourceId, ActionType.LIGHT_TURN_OFF, reason));break;
 					case WINDOW_CLOSE: this.sendData(new Action(resourceId, ActionType.WINDOW_CLOSE, reason));break;
 					case WINDOW_OPEN: this.sendData(new Action(resourceId, ActionType.WINDOW_OPEN, reason));break;
+					case SECURITY_LEVEL_RISE: this.sendData(new Action(resourceId, ActionType.SECURITY_LEVEL_RISE, reason));break;
+					case SECURITY_LEVEL_DROP: this.sendData(new Action(resourceId, ActionType.SECURITY_LEVEL_DROP, reason));break;
 					case TURN_OFF_ALL: this.sendData(new Action(resourceId, ActionType.TURN_OFF_ALL, reason));break;
 					case DO_NOTHING: this.sendData(new Action(resourceId, ActionType.DO_NOTHING, reason));break;
 					default: break;

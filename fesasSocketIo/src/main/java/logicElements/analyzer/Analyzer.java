@@ -87,6 +87,7 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
                     boolean conditionSatisfied = false;
 
                     int dayEnd = Integer.parseInt((String) props.get("day.end"));
+                    int maxPersonCount = Integer.parseInt((String) props.get("person.maxCount"));
 
                     int personCount = 0; // If no person is recognized yet the personCount will be 0
                     boolean windowClosed = true;
@@ -151,7 +152,7 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
                             case SENSOR_TYPE_PERSON: {
                                 boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null);
 
-                                if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
+                                if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), maxPersonCount, actionAllowed)) {
                                     this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
                                     conditionSatisfied = true;
                                     break; // if we have found the first rule that is satisfied we can stop

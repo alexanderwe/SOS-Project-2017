@@ -209,6 +209,32 @@ public class MainController implements SocketEventListener{
                         e.printStackTrace();
                     }
                     break;
+                case SECURITY_LEVEL_RISE:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_SECURITY\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"level\": 2\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case SECURITY_LEVEL_DROP:
+                    try {
+                        this.sensorSocket.sendMessage("sensorData", "{\n" +
+                                "  \"sensorType\": \"SENSOR_TYPE_SECURITY\",\n" +
+                                "  \"resourceId\": \"1aadjadj\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"level\": 1\n" +
+                                "  }\n" +
+                                "}");
+                    } catch (ConnectException e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 case TURN_OFF_ALL:
                     try {
                         this.sensorSocket.sendMessage("sensorData", "{\n" +
