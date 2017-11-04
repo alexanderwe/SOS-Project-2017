@@ -7,9 +7,8 @@
 
 * logicElements.sensor.SocketIOSensor: _Send String_
 * logicElements.monitor.Monitor: _Send JsonObject_
-* logicElements.analyzer.Analyzer: _Send JsonObject_
 * logicElements.sensor.Analyzer: _Send JsonObject_
-* logicElements.planner.Planner: _Send JsonObject_
+* logicElements.planner.Planner: _Send Action_
 * logicElements.executor.Executor: _Send JsonObject_
 * logicElements.effector.SocketIoEffector: _Send String_
 
