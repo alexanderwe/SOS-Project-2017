@@ -4,12 +4,14 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import service.JsonService;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages the SocketIO connection
+ */
 public class SensorSocket {
 
     final static Logger logger = LogManager.getLogger(SensorSocket.class);
@@ -60,9 +62,16 @@ public class SensorSocket {
         listeners.add(toAdd);
     }
 
+    /**
+     * Send a message to the connected server
+     *
+     * @param key
+     * @param data
+     * @throws ConnectException
+     */
     public void sendMessage(String key, Object data) throws ConnectException {
         if (this.connected) {
-            logger.info("Send " + key +" with " + data + " to " + this.socketUrl);
+            logger.info("Send " + key + " with " + data + " to " + this.socketUrl);
             for (SocketEventListener listener : listeners) {
                 listener.socketHasSentData(data);
             }
@@ -72,13 +81,19 @@ public class SensorSocket {
         }
     }
 
-    public void connect(){
+    /**
+     * Connects to the server
+     */
+    public void connect() {
         if (!this.connected) {
             logger.info("Try to connect to " + this.socketUrl);
             socket.connect();
         }
     }
 
+    /**
+     * Closes the connection to the server
+     */
     public void close() {
         logger.info("Disconnecting socket");
         socket.disconnect();

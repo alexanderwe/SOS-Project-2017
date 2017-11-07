@@ -8,19 +8,23 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
+/**
+ * Class for working with the rules.json file
+ */
 public class RulesUtil {
 
     final static Logger logger = LogManager.getLogger(RulesUtil.class);
 
-
+    /**
+     * Load JSON file from classpath
+     *
+     * @param filename
+     * @return
+     * @throws Exception
+     */
     public static JsonObject loadFromClasspath(String filename) throws Exception {
-        Map<String, String> propertyMap = new HashMap();
-        logger.info("loading file: " +  filename);
+        logger.info("loading file: " + filename);
         InputStream stream = RulesUtil.class.getClassLoader().getResourceAsStream(filename);
         Reader reader = new InputStreamReader(stream, "UTF-8");
         JsonObject rules = new JsonParser().parse(reader).getAsJsonObject();

@@ -1,5 +1,9 @@
 package knowledge;
 
+/**
+ * Enum for the possible actions of the system
+ * Same as in the FESAS system
+ */
 public enum ActionType {
     LIGHT_TURN_ON("LIGHT_TURN_ON"),
     LIGHT_TURN_OFF("LIGHT_TURN_OFF"),
@@ -16,9 +20,14 @@ public enum ActionType {
         this.value = value;
     }
 
+    /**
+     * Return the action type by its string value
+     *
+     * @param value
+     * @return
+     */
     public static ActionType byValue(String value) {
         for (ActionType type : ActionType.values()) {
-            System.out.println(value);
             if (type.value.equals(value)) {
                 return type;
             }

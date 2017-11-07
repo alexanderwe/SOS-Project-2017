@@ -75,100 +75,108 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
             if (data.getData() instanceof JsonObject) {
 
                 try {
-                    System.out.println("In Analyzer");
+
                     //Extract mandatory data of the JsonObject
                     JsonObject sensor = (JsonObject) data.getData();
                     String resourceId = sensor.get("resourceId").getAsString();
                     SensorType sensorType = SensorType.byValue(sensor.get("sensorType").getAsString());
                     JsonObject sensorData = sensor.getAsJsonObject("data");
 
-
                     // Is used for checking if the system can execute any given action
                     boolean conditionSatisfied = false;
 
+                    // Read properties
                     int dayEnd = Integer.parseInt((String) props.get("day.end"));
                     int maxPersonCount = Integer.parseInt((String) props.get("person.maxCount"));
 
+                    // Default sensor values
                     int personCount = 0; // If no person is recognized yet the personCount will be 0
                     boolean windowClosed = true;
                     boolean lightOn = false;
 
 
+                    // Read sensor values from the current context/sate if they are available
                     try {
                         personCount = ContextWrapper.getInstance().getContext().get(resourceId).get("SENSOR_TYPE_PERSON").get(0).get("value").getAsInt();
                     } catch (Exception e) {
-                        logger.error("Person count not initialized");
+                        logger.warn("Person count not initialized");
                     }
 
                     try {
                         windowClosed = ContextWrapper.getInstance().getContext().get(resourceId).get("SENSOR_TYPE_WINDOW").get(0).get("closed").getAsBoolean();
                     } catch (Exception e) {
-                        logger.error("Window closed not initialized");
+                        logger.warn("Window closed not initialized");
                     }
 
                     try {
                         lightOn = ContextWrapper.getInstance().getContext().get(resourceId).get("SENSOR_TYPE_LIGHT_BULB").get(0).get("on").getAsBoolean();
                     } catch (Exception e) {
-                        logger.error("Light on not initialized");
+                        logger.warn("Light on not initialized");
                     }
 
-
+                    logger.info("System is using following base contexts");
                     logger.info("Person count: " + personCount);
                     logger.info("Window closed: " + windowClosed);
                     logger.info("Light on: " + lightOn);
+                    try {
+                        for (JsonElement condition : rules.getAsJsonObject(sensorType.toString()).getAsJsonArray("conditions")) {
 
-                    for (JsonElement condition : rules.getAsJsonObject(sensorType.toString()).getAsJsonArray("conditions")) {
-
-                        // Keys of the current condition object of the loop
-                        JsonObject currentCondition = condition.getAsJsonObject();
-                        String name = currentCondition.get("name").getAsString();
-                        String eval = currentCondition.get("eval").getAsString(); // JS Function
-                        String conditionFunc = currentCondition.get("condition").getAsString(); // JS Function
-                        String action = currentCondition.get("action").getAsString();
+                            // Keys of the current condition object of the loop
+                            JsonObject currentCondition = condition.getAsJsonObject();
+                            String name = currentCondition.get("name").getAsString();
+                            String eval = currentCondition.get("eval").getAsString(); // JS Function
+                            String conditionFunc = currentCondition.get("condition").getAsString(); // JS Function
+                            String action = currentCondition.get("action").getAsString();
 
 
-                        switch (sensorType) {
-                            case SENSOR_TYPE_LIGHT: {
-                                boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount, lightOn);
+                            // Evaluate rules according to the sensor type
+                            switch (sensorType) {
+                                case SENSOR_TYPE_LIGHT: {
+                                    boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount, lightOn);
 
-                                if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
-                                    this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
-                                    conditionSatisfied = true;
-                                    break; // if we have found the first rule that is satisfied we can stop
+                                    if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
+                                        this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
+                                        conditionSatisfied = true;
+                                        break; // if we have found the first rule that is satisfied we can stop
 
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                            case SENSOR_TYPE_HUMIDITY: {
-                                boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount, windowClosed);
+                                case SENSOR_TYPE_HUMIDITY: {
+                                    boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null, dayEnd, personCount, windowClosed);
 
-                                if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
-                                    this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
-                                    conditionSatisfied = true;
-                                    break; // if we have found the first rule that is satisfied we can stop
+                                    if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), actionAllowed)) {
+                                        this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
+                                        conditionSatisfied = true;
+                                        break; // if we have found the first rule that is satisfied we can stop
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                            case SENSOR_TYPE_PERSON: {
-                                boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null);
+                                case SENSOR_TYPE_PERSON: {
+                                    boolean actionAllowed = (boolean) ((JSObject) engine.eval(conditionFunc)).call(null);
 
-                                if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), maxPersonCount, actionAllowed)) {
-                                    this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
-                                    conditionSatisfied = true;
-                                    break; // if we have found the first rule that is satisfied we can stop
+                                    if ((boolean) ((JSObject) engine.eval(eval)).call(null, sensorData.get("value").getAsInt(), maxPersonCount, actionAllowed)) {
+                                        this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.byValue(action) + ", reason: " + name + "}").getAsJsonObject());
+                                        conditionSatisfied = true;
+                                        break; // if we have found the first rule that is satisfied we can stop
+                                    }
+                                    break;
                                 }
-                                break;
+                                default:
+                                    break;
                             }
-                            default:
-                                break;
+
+
                         }
-
-
+                        if (!conditionSatisfied) {
+                            this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.DO_NOTHING + ", reason: '" + new String("Did not found a condition that was satisfied") + "'}").getAsJsonObject());
+                        }
+                    } catch (NullPointerException npe){
+                        logger.warn("No rule found for this sensor type: " + sensorType.toString());
                     }
+
                     // We did not found any condition that was met
-                    if (!conditionSatisfied) {
-                        this.sendData(new JsonParser().parse("{resourceId: " + resourceId + ", action: " + ActionType.DO_NOTHING + ", reason: '" + new String("Did not found a condition that was satisfied") + "'}").getAsJsonObject());
-                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -177,8 +185,4 @@ public class Analyzer extends AbstractLogic implements IAnalyzerLogic {
         }
         return "Not a KnowledgeRecord! It is: " + data.getClass().getSimpleName();
     }
-
-    // add further methods if needed
-
-
 }

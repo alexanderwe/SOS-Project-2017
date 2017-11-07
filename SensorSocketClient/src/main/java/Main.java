@@ -8,8 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-// TODO: Check why application freezes when closing
-
+/**
+ * Starts and setups UI
+ */
 public class Main extends Application {
 
     final static Logger logger = LogManager.getLogger(Main.class);
@@ -18,7 +19,7 @@ public class Main extends Application {
     static MainController mainController;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         //Set up instance instead of using static load() method
         FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml/main.fxml"));
         Parent root = loader.load();
@@ -33,7 +34,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         logger.info("Closing stage");
         mainController.getSensorSocket().close();
     }

@@ -1,6 +1,5 @@
 package logicElements.knowledge;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -14,7 +13,8 @@ import java.util.Map;
 
 /**
  * Class for wrapping the context for the application. Implemented as a singleton, as it should serve like a state management resource, compared to things like
- * Flux or Redux
+ * Flux or Redux(in React.js). But it does not follow all of the principles of those libraries. Just the concept of having one
+ * central place for the current state of a system
  */
 public class ContextWrapper {
 
@@ -26,57 +26,53 @@ public class ContextWrapper {
 
     private ContextWrapper() {
         context = new HashMap<>();
-        server =  SocketManager.getInstance().getServer();
+        server = SocketManager.getInstance().getServer();
 
     }
 
-    public static ContextWrapper getInstance () {
+    public static ContextWrapper getInstance() {
         if (ContextWrapper.instance == null) {
-            ContextWrapper.instance =  new ContextWrapper();
+            ContextWrapper.instance = new ContextWrapper();
         }
         return ContextWrapper.instance;
     }
 
     /**
      * Add the data from a resource ID based on the sensor type to the context
+     *
      * @param resourceId
      * @param sensorType
      * @param data
      */
     public void put(String resourceId, SensorType sensorType, JsonObject data) {
+        logger.info("Add " + data + " to the context/state");
         if (this.context.get(resourceId) == null) {
-            System.out.println("if");
             Map<String, ArrayList<JsonObject>> resourceEntries = new HashMap<>();
             ArrayList<JsonObject> datas = new ArrayList();
             datas.add(data);
             resourceEntries.put(sensorType.value, datas);
             this.context.put(resourceId, resourceEntries);
         } else {
-            System.out.println(this.context.get(sensorType.value));
             if (this.context.get(resourceId).get(sensorType.value) == null) {
                 ArrayList<JsonObject> datas = new ArrayList();
                 datas.add(data);
-                System.out.println("else if");
                 this.context.get(resourceId).put(sensorType.value, datas);
             } else {
-                System.out.println("else else");
                 this.context.get(resourceId).get(sensorType.value).remove(0); // remove old value
                 this.context.get(resourceId).get(sensorType.value).add(data); // set new value
             }
         }
-        try{
-            System.out.println((new Gson()).toJson(this.context));
+        try {
 
-            for (SocketIOClient client: server.getAllClients()) {
-                client.sendEvent("contextData", (new Gson()).toJson(this.context));
-            }
+            // If the context changes send the new context to all connected clients
+            server.getAllClients().forEach(client -> client.sendEvent("contextData", (new Gson()).toJson(this.context)));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-
     }
+
     public HashMap<String, Map<String, ArrayList<JsonObject>>> getContext() {
         return this.context;
     }
@@ -86,8 +82,8 @@ public class ContextWrapper {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (String resourceId: this.context.keySet()){
-            stringBuilder.append("ResourceId: " +  resourceId);
+        for (String resourceId : this.context.keySet()) {
+            stringBuilder.append("ResourceId: " + resourceId);
             stringBuilder.append(System.lineSeparator());
             stringBuilder.append("############################");
             stringBuilder.append(System.lineSeparator());

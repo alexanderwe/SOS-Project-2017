@@ -26,7 +26,11 @@ import java.io.IOException;
 import java.net.ConnectException;
 
 
-public class MainController implements SocketEventListener{
+/**
+ * Controls the MainUI window
+ * Implements a SocketEventListener to react to certain events
+ */
+public class MainController implements SocketEventListener {
 
     final static Logger logger = LogManager.getLogger(MainController.class);
 
@@ -45,16 +49,15 @@ public class MainController implements SocketEventListener{
 
     private SensorSocket sensorSocket;
 
-    public MainController(){
+    public MainController() {
         this.sensorSocket = new SensorSocket("127.0.0.1", "7777");
         this.sensorSocket.addListener(this);
     }
 
-    @FXML
-    public void initialize() {
-    }
-
-    public void sendJSON(ActionEvent actionEvent) {
+    /**
+     * Send the text written in {@link MainController#jsonTextArea}
+     */
+    public void sendJSON() {
         errorLabelText.setText("");
         this.fesasResultTextArea.setText("");
         errorLabelText.setTextFill(Color.web("#000000"));
@@ -76,6 +79,9 @@ public class MainController implements SocketEventListener{
         }
     }
 
+    /**
+     * Pretty print the json written in {@link MainController#jsonTextArea}
+     */
     public void prettyPrint() {
         errorLabelText.setText("");
         errorLabelText.setTextFill(Color.web("#000000"));
@@ -92,14 +98,27 @@ public class MainController implements SocketEventListener{
         }
     }
 
-    public void shutDownServer() throws IOException{
+    /**
+     * Shutdowns the server the client is connected to
+     *
+     * @throws IOException
+     */
+    public void shutDownServer() throws IOException {
         sensorSocket.sendMessage("shutdown", true);
     }
 
-    public void connectToServer(){
+    /**
+     * Connects to the FESAS SocketIO server
+     */
+    public void connectToServer() {
         sensorSocket.connect();
     }
 
+    /**
+     * Imports a JSON file using a FilePicker Dialog
+     *
+     * @param actionEvent
+     */
     public void importJSON(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
@@ -117,7 +136,10 @@ public class MainController implements SocketEventListener{
         }
     }
 
-    public void closeApplication(ActionEvent actionEvent) {
+    /**
+     * Closes the application and disconnects from the FESAS
+     */
+    public void closeApplication() {
         logger.info("Closing application");
         this.getSensorSocket().close();
         System.exit(0);
@@ -149,6 +171,13 @@ public class MainController implements SocketEventListener{
     }
 
 
+    /**
+     * Sends specific Data back to the FESAS system based on the result from a previous evaluation
+     * The sent data is JSON formated. We did not use a JSON Builder class or anything else here. This
+     * could be improved but is essentially not necessary.
+     *
+     * @param data
+     */
     @Override
     public void retrievedEffectorData(Object... data) {
         Platform.runLater(() -> {
@@ -254,7 +283,8 @@ public class MainController implements SocketEventListener{
                     } catch (ConnectException e) {
                         e.printStackTrace();
                     }
-                default: break;
+                default:
+                    break;
             }
 
 
@@ -262,6 +292,11 @@ public class MainController implements SocketEventListener{
     }
 
 
+    /**
+     * Change the {@link MainController#fesasContextTextArea} according to the data when a new context is received
+     *
+     * @param data
+     */
     @Override
     public void retrievedContextData(Object... data) {
         Platform.runLater(() -> {
@@ -269,6 +304,11 @@ public class MainController implements SocketEventListener{
         });
     }
 
+    /**
+     * Change the {@link MainController#lastSentData} according to the data when new data is sent
+     *
+     * @param data
+     */
     @Override
     public void socketHasSentData(Object data) {
         Platform.runLater(() -> {

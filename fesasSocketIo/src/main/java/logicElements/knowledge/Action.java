@@ -1,5 +1,9 @@
 package logicElements.knowledge;
 
+
+/**
+ * Class for specifying an action, with it's reason and the source resourceId
+ */
 public class Action {
 
     private String resourceId;

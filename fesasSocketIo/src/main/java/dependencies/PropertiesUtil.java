@@ -9,11 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Class for working with property files
+ */
 public class PropertiesUtil {
 
     final static Logger logger = LogManager.getLogger(PropertiesUtil.class);
 
-
+    /**
+     * Load a properties file into a Map from the classpath
+     * @param filename
+     * @return
+     * @throws Exception
+     */
     public static Map loadFromClasspath(String filename) throws Exception {
         Map<String, String> propertyMap = new HashMap();
         logger.info("loading file: " +  filename);
